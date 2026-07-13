@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concurso @exoticos_pp</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>Concurso de Fotos e Vídeos</h1>
+  <p>@exoticos_pp — veja todas as inscrições e vote na sua favorita em cada categoria</p>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" data-tab="fotos">📸 Fotos (<span id="count-fotos"></span>)</button>
+  <button class="tab-btn" data-tab="videos">🎥 Vídeos (<span id="count-videos"></span>)</button>
+</div>
+
+<section id="tab-fotos" class="tab-panel active">
+  <div id="grid-fotos" class="grid"></div>
+  <div class="vote-cta">
+    <a id="link-forms-fotos" href="#" class="disabled" target="_blank" rel="noopener">Votar nas Fotos</a>
+  </div>
+</section>
+
+<section id="tab-videos" class="tab-panel">
+  <div id="grid-videos" class="grid"></div>
+  <div class="vote-cta">
+    <a id="link-forms-videos" href="#" class="disabled" target="_blank" rel="noopener">Votar nos Vídeos</a>
+  </div>
+</section>
+
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightbox-close">&times;</button>
+  <div class="lightbox-content">
+    <div id="lightbox-body"></div>
+    <div class="lightbox-caption" id="lightbox-caption"></div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
