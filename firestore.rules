@@ -1,0 +1,50 @@
+rules_version = '2';
+
+// Depois de criar o usuario admin no Firebase Auth (email/senha),
+// copie o UID dele (Console > Authentication > Users) e cole abaixo.
+// Isso e o que da acesso de leitura de votos e escrita de participantes.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null && request.auth.uid == "COLE_O_UID_DO_ADMIN_AQUI";
+    }
+
+    function isElevenDigits(id) {
+      return id.matches('^[0-9]{11}$');
+    }
+
+    function voteFieldsValid() {
+      return request.resource.data.keys().hasAll(['participanteId', 'nome', 'timestamp'])
+        && request.resource.data.nome is string
+        && request.resource.data.nome.size() > 0
+        && request.resource.data.participanteId is string
+        && request.resource.data.participanteId.size() > 0;
+    }
+
+    match /participantes/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Documento = CPF normalizado (11 digitos). Uma vez criado, nunca pode
+    // ser atualizado/apagado/recriado -> e o que garante 1 voto por CPF.
+    // Observacao de seguranca: as regras do Firestore nao conseguem rodar o
+    // calculo de digito verificador do CPF (sem loop na linguagem de regras).
+    // A validacao completa do checksum roda no cliente (lib/cpf.js) antes do
+    // envio; aqui so garantimos formato de 11 digitos + unicidade. Alguem
+    // manipulando a API diretamente poderia burlar o checksum - fechar esse
+    // gap exigiria Cloud Function (plano Blaze). Ver README para detalhes.
+    match /votos_fotos/{cpf} {
+      allow create: if isElevenDigits(cpf) && voteFieldsValid();
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
+
+    match /votos_videos/{cpf} {
+      allow create: if isElevenDigits(cpf) && voteFieldsValid();
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
+  }
+}

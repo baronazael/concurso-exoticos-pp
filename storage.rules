@@ -1,0 +1,11 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Fotos das participacoes: leitura publica, upload/troca so pelo admin.
+    match /fotos/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == "COLE_O_UID_DO_ADMIN_AQUI";
+    }
+  }
+}

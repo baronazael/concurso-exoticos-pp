@@ -14,22 +14,16 @@
 </header>
 
 <div class="tabs">
-  <button class="tab-btn active" data-tab="fotos">📸 Fotos (<span id="count-fotos"></span>)</button>
-  <button class="tab-btn" data-tab="videos">🎥 Vídeos (<span id="count-videos"></span>)</button>
+  <button class="tab-btn active" data-tab="fotos">📸 Fotos (<span id="count-fotos">0</span>)</button>
+  <button class="tab-btn" data-tab="videos">🎥 Vídeos (<span id="count-videos">0</span>)</button>
 </div>
 
 <section id="tab-fotos" class="tab-panel active">
   <div id="grid-fotos" class="grid"></div>
-  <div class="vote-cta">
-    <a id="link-forms-fotos" href="#" class="disabled" target="_blank" rel="noopener">Votar nas Fotos</a>
-  </div>
 </section>
 
 <section id="tab-videos" class="tab-panel">
   <div id="grid-videos" class="grid"></div>
-  <div class="vote-cta">
-    <a id="link-forms-videos" href="#" class="disabled" target="_blank" rel="noopener">Votar nos Vídeos</a>
-  </div>
 </section>
 
 <div class="lightbox" id="lightbox">
@@ -40,7 +34,37 @@
   </div>
 </div>
 
-<script src="data.js"></script>
+<div class="vote-modal" id="vote-modal">
+  <div class="vote-modal-box">
+    <button class="lightbox-close" id="vote-modal-close">&times;</button>
+    <h3 id="vote-modal-title">Confirmar voto</h3>
+    <p class="vote-modal-sub" id="vote-modal-sub"></p>
+
+    <form id="vote-form">
+      <label>Nome completo
+        <input type="text" id="vote-nome" required autocomplete="name">
+      </label>
+      <label>CPF
+        <input type="text" id="vote-cpf" required inputmode="numeric" placeholder="000.000.000-00" maxlength="14">
+      </label>
+      <label class="vote-consent">
+        <input type="checkbox" id="vote-consent" required>
+        <span>Autorizo o uso do meu nome e CPF apenas para validar 1 voto por pessoa nesta categoria.</span>
+      </label>
+      <div class="vote-error" id="vote-error"></div>
+      <button type="submit" class="vote-submit">Confirmar voto</button>
+    </form>
+
+    <div class="vote-success" id="vote-success" style="display:none;">
+      Voto registrado! Obrigado por participar. 🎉
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="lib/firebase-config.js"></script>
+<script src="lib/cpf.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

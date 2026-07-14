@@ -1,0 +1,148 @@
+.admin-box {
+  max-width: 360px;
+  margin: 60px auto;
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+}
+
+.admin-box label, #edit-form label {
+  display: block;
+  margin-bottom: 14px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.admin-box input, #edit-form input[type="text"] {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #14306b;
+  background: #000c26;
+  color: var(--text);
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+.admin-topbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 20px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.admin-section {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 10px 20px 60px;
+}
+
+.admin-section h3 { margin: 24px 0 10px; }
+
+.admin-link-btn {
+  background: var(--card);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.admin-add-btn {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px dashed var(--muted);
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.admin-list { display: flex; flex-direction: column; gap: 8px; }
+
+.admin-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--card);
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+.admin-row img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 6px;
+  background: #001030;
+}
+
+.admin-row .row-name { flex: 1; font-size: 14px; }
+.admin-row .row-order { color: var(--muted); font-size: 12px; width: 28px; }
+
+.admin-row button {
+  background: none;
+  border: 1px solid var(--muted);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.admin-tally { display: flex; flex-direction: column; gap: 6px; }
+
+.tally-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--card);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.tally-row .tally-name { flex: 1; }
+.tally-row .tally-bar {
+  height: 6px;
+  background: var(--accent);
+  border-radius: 4px;
+}
+.tally-row .tally-count { color: var(--accent); font-weight: 700; width: 40px; text-align: right; }
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.admin-table th, .admin-table td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid #14306b;
+}
+
+.admin-table th { color: var(--muted); font-weight: 600; }
+
+.admin-danger-btn {
+  width: 100%;
+  margin-top: 8px;
+  background: none;
+  border: 1px solid #ff6b6b;
+  color: #ff6b6b;
+  padding: 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 14px;
+}

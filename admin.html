@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Concurso @exoticos_pp</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<header>
+  <h1>Painel Admin</h1>
+  <p>Concurso @exoticos_pp</p>
+</header>
+
+<div id="login-box" class="admin-box">
+  <h3>Entrar</h3>
+  <label>E-mail
+    <input type="email" id="login-email" autocomplete="username">
+  </label>
+  <label>Senha
+    <input type="password" id="login-senha" autocomplete="current-password">
+  </label>
+  <div class="vote-error" id="login-error"></div>
+  <button id="login-btn" class="vote-submit">Entrar</button>
+</div>
+
+<div id="admin-panel" style="display:none;">
+  <div class="admin-topbar">
+    <span id="admin-user"></span>
+    <button id="logout-btn" class="admin-link-btn">Sair</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-atab="participantes">Participantes</button>
+    <button class="tab-btn" data-atab="votos">Contagem de votos</button>
+    <button class="tab-btn" data-atab="votantes">Lista de votantes</button>
+  </div>
+
+  <section id="atab-participantes" class="tab-panel active admin-section">
+    <button id="seed-btn" class="admin-link-btn">Criar 18 fotos + 6 vídeos padrão (só na 1ª vez)</button>
+
+    <h3>Fotos</h3>
+    <div id="admin-fotos" class="admin-list"></div>
+    <button class="admin-add-btn" data-add="foto">+ Adicionar participante (foto)</button>
+
+    <h3>Vídeos</h3>
+    <div id="admin-videos" class="admin-list"></div>
+    <button class="admin-add-btn" data-add="video">+ Adicionar participante (vídeo)</button>
+  </section>
+
+  <section id="atab-votos" class="tab-panel admin-section">
+    <h3>Fotos — votos por participante</h3>
+    <div id="tally-fotos" class="admin-tally"></div>
+    <h3>Vídeos — votos por participante</h3>
+    <div id="tally-videos" class="admin-tally"></div>
+  </section>
+
+  <section id="atab-votantes" class="tab-panel admin-section">
+    <button id="export-csv-btn" class="admin-link-btn">Exportar CSV</button>
+    <table class="admin-table" id="voters-table">
+      <thead>
+        <tr><th>Categoria</th><th>Nome do votante</th><th>CPF</th><th>Votou em</th><th>Quando</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+</div>
+
+<div class="vote-modal" id="edit-modal">
+  <div class="vote-modal-box">
+    <button class="lightbox-close" id="edit-modal-close">&times;</button>
+    <h3 id="edit-modal-title">Editar participante</h3>
+    <form id="edit-form">
+      <label>Nome
+        <input type="text" id="edit-nome" required>
+      </label>
+      <label id="edit-foto-label">Arquivo da foto
+        <input type="file" id="edit-arquivo" accept="image/*">
+      </label>
+      <label id="edit-video-label">ID do vídeo no YouTube
+        <input type="text" id="edit-youtube-id" placeholder="ex: ABC123xyz">
+      </label>
+      <div class="vote-error" id="edit-error"></div>
+      <button type="submit" class="vote-submit" id="edit-save-btn">Salvar</button>
+      <button type="button" class="admin-danger-btn" id="edit-delete-btn">Remover participante</button>
+    </form>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<script src="lib/firebase-config.js"></script>
+<script src="lib/cpf.js"></script>
+<script src="data.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

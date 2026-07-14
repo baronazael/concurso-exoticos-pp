@@ -1,64 +1,62 @@
-function renderFotos() {
-  const grid = document.getElementById("grid-fotos");
-  document.getElementById("count-fotos").textContent = fotos.length;
+let fotos = [];
+let videos = [];
+let voteContext = null; // { categoria, participanteId, participanteNome }
 
-  fotos.forEach((item) => {
-    const card = document.createElement("div");
-    card.className = "card";
-    card.innerHTML = `
-      <img class="thumb" src="${item.arquivo}" alt="${item.participante}"
-           onerror="this.outerHTML='<div class=&quot;thumb-placeholder&quot;>Foto ainda não enviada<br>(${item.arquivo})</div>'">
-      <div class="label">
-        <span class="badge">Foto ${item.id}</span>
-        <span class="name">${item.participante}</span>
-      </div>
-    `;
-    card.addEventListener("click", () => openLightboxFoto(item));
-    grid.appendChild(card);
-  });
-}
+function renderGrid(gridId, countId, items, categoria) {
+  const grid = document.getElementById(gridId);
+  grid.innerHTML = "";
+  document.getElementById(countId).textContent = items.length;
 
-function renderVideos() {
-  const grid = document.getElementById("grid-videos");
-  document.getElementById("count-videos").textContent = videos.length;
-
-  videos.forEach((item) => {
+  items.forEach((item) => {
     const card = document.createElement("div");
     card.className = "card";
 
-    const thumbHtml = item.youtubeId
-      ? `<img class="thumb" src="https://img.youtube.com/vi/${item.youtubeId}/hqdefault.jpg" alt="${item.participante}">
-         <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`
-      : `<div class="thumb-placeholder">Vídeo em breve<br>(aguardando link)</div>`;
+    const thumbHtml =
+      categoria === "foto"
+        ? item.arquivoUrl
+          ? `<img class="thumb" src="${item.arquivoUrl}" alt="${item.nome}">`
+          : `<div class="thumb-placeholder">Foto ainda não enviada</div>`
+        : item.youtubeId
+        ? `<img class="thumb" src="https://img.youtube.com/vi/${item.youtubeId}/hqdefault.jpg" alt="${item.nome}">
+           <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`
+        : `<div class="thumb-placeholder">Vídeo em breve</div>`;
 
     card.innerHTML = `
-      ${thumbHtml}
-      <div class="label">
-        <span class="badge">Vídeo ${item.id}</span>
-        <span class="name">${item.participante}</span>
+      <div class="thumb-wrap">
+        ${thumbHtml}
+        <div class="name-overlay">${item.nome}</div>
       </div>
+      <button class="vote-btn" type="button">Votar</button>
     `;
-    card.addEventListener("click", () => openLightboxVideo(item));
+
+    card.querySelector(".thumb-wrap").addEventListener("click", () => {
+      categoria === "foto" ? openLightboxFoto(item) : openLightboxVideo(item);
+    });
+
+    card.querySelector(".vote-btn").addEventListener("click", (e) => {
+      e.stopPropagation();
+      openVoteModal(categoria, item);
+    });
+
     grid.appendChild(card);
   });
 }
 
 function openLightboxFoto(item) {
   const body = document.getElementById("lightbox-body");
-  body.innerHTML = `<img src="${item.arquivo}" alt="${item.participante}"
-    onerror="this.outerHTML='<div class=&quot;thumb-placeholder&quot; style=&quot;aspect-ratio:auto;padding:60px;&quot;>Foto ainda não enviada</div>'">`;
-  document.getElementById("lightbox-caption").textContent = `Foto ${item.id} — ${item.participante}`;
+  body.innerHTML = item.arquivoUrl
+    ? `<img src="${item.arquivoUrl}" alt="${item.nome}">`
+    : `<div class="thumb-placeholder" style="aspect-ratio:auto;padding:60px;">Foto ainda não enviada</div>`;
+  document.getElementById("lightbox-caption").textContent = item.nome;
   document.getElementById("lightbox").classList.add("active");
 }
 
 function openLightboxVideo(item) {
   const body = document.getElementById("lightbox-body");
-  if (item.youtubeId) {
-    body.innerHTML = `<div class="video-frame"><iframe src="https://www.youtube.com/embed/${item.youtubeId}" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>`;
-  } else {
-    body.innerHTML = `<div class="thumb-placeholder" style="aspect-ratio:auto;padding:60px;">Vídeo ainda não disponível</div>`;
-  }
-  document.getElementById("lightbox-caption").textContent = `Vídeo ${item.id} — ${item.participante}`;
+  body.innerHTML = item.youtubeId
+    ? `<div class="video-frame"><iframe src="https://www.youtube.com/embed/${item.youtubeId}" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>`
+    : `<div class="thumb-placeholder" style="aspect-ratio:auto;padding:60px;">Vídeo ainda não disponível</div>`;
+  document.getElementById("lightbox-caption").textContent = item.nome;
   document.getElementById("lightbox").classList.add("active");
 }
 
@@ -81,25 +79,109 @@ document.querySelectorAll(".tab-btn").forEach((btn) => {
   });
 });
 
-function setupVoteLinks() {
-  const linkFotos = document.getElementById("link-forms-fotos");
-  const linkVideos = document.getElementById("link-forms-videos");
+// --- Voto ---
 
-  if (LINK_FORMS_FOTOS) {
-    linkFotos.href = LINK_FORMS_FOTOS;
-    linkFotos.classList.remove("disabled");
-  } else {
-    linkFotos.textContent = "Link de votação em breve";
-  }
-
-  if (LINK_FORMS_VIDEOS) {
-    linkVideos.href = LINK_FORMS_VIDEOS;
-    linkVideos.classList.remove("disabled");
-  } else {
-    linkVideos.textContent = "Link de votação em breve";
-  }
+function jaVotouLocal(categoria) {
+  return localStorage.getItem(`votou_${categoria}`) === "1";
 }
 
-renderFotos();
-renderVideos();
-setupVoteLinks();
+function marcarVotouLocal(categoria) {
+  localStorage.setItem(`votou_${categoria}`, "1");
+}
+
+function openVoteModal(categoria, item) {
+  voteContext = { categoria, participanteId: item.id, participanteNome: item.nome };
+
+  const form = document.getElementById("vote-form");
+  form.reset();
+  document.getElementById("vote-error").textContent = "";
+  document.getElementById("vote-success").style.display = "none";
+  form.style.display = "block";
+
+  document.getElementById("vote-modal-title").textContent = `Votar em: ${item.nome}`;
+  document.getElementById("vote-modal-sub").textContent =
+    categoria === "foto" ? "Categoria Fotos" : "Categoria Vídeos";
+
+  if (jaVotouLocal(categoria)) {
+    document.getElementById("vote-error").textContent =
+      "Este navegador já registrou um voto nesta categoria.";
+  }
+
+  document.getElementById("vote-modal").classList.add("active");
+}
+
+function closeVoteModal() {
+  document.getElementById("vote-modal").classList.remove("active");
+  voteContext = null;
+}
+
+document.getElementById("vote-modal-close").addEventListener("click", closeVoteModal);
+document.getElementById("vote-modal").addEventListener("click", (e) => {
+  if (e.target.id === "vote-modal") closeVoteModal();
+});
+
+document.getElementById("vote-cpf").addEventListener("input", (e) => {
+  const d = normalizeCPF(e.target.value).slice(0, 11);
+  e.target.value = formatCPF(d);
+});
+
+document.getElementById("vote-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const errorEl = document.getElementById("vote-error");
+  errorEl.textContent = "";
+
+  const nome = document.getElementById("vote-nome").value.trim();
+  const cpf = normalizeCPF(document.getElementById("vote-cpf").value);
+
+  if (nome.length < 3) {
+    errorEl.textContent = "Digite seu nome completo.";
+    return;
+  }
+  if (!isValidCPF(cpf)) {
+    errorEl.textContent = "CPF inválido. Confira os números digitados.";
+    return;
+  }
+
+  const submitBtn = e.target.querySelector(".vote-submit");
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Enviando...";
+
+  const colecao = voteContext.categoria === "foto" ? "votos_fotos" : "votos_videos";
+
+  try {
+    await db.collection(colecao).doc(cpf).set({
+      participanteId: voteContext.participanteId,
+      nome: nome,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+
+    marcarVotouLocal(voteContext.categoria);
+    document.getElementById("vote-form").style.display = "none";
+    document.getElementById("vote-success").style.display = "block";
+  } catch (err) {
+    if (err.code === "permission-denied") {
+      errorEl.textContent = "Este CPF já votou nesta categoria.";
+    } else {
+      errorEl.textContent = "Erro ao registrar voto. Tente novamente.";
+    }
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Confirmar voto";
+  }
+});
+
+// --- Firestore live data ---
+
+db.collection("participantes").where("categoria", "==", "foto").onSnapshot((snap) => {
+  fotos = snap.docs
+    .map((d) => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0));
+  renderGrid("grid-fotos", "count-fotos", fotos, "foto");
+});
+
+db.collection("participantes").where("categoria", "==", "video").onSnapshot((snap) => {
+  videos = snap.docs
+    .map((d) => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0));
+  renderGrid("grid-videos", "count-videos", videos, "video");
+});
