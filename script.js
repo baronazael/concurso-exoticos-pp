@@ -105,6 +105,37 @@ function marcarVotouLocal(categoria) {
   localStorage.setItem(`votou_${categoria}`, "1");
 }
 
+let encerramentoMs = null;
+
+function votacaoEncerrada() {
+  return encerramentoMs !== null && Date.now() > encerramentoMs;
+}
+
+function atualizarAvisoPrazo() {
+  const el = document.getElementById("prazo-aviso");
+  if (encerramentoMs === null) {
+    el.style.display = "none";
+    return;
+  }
+  const data = new Date(encerramentoMs);
+  const formatado = data.toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
+  el.style.display = "block";
+  if (votacaoEncerrada()) {
+    el.textContent = `Votação encerrada em ${formatado}.`;
+    el.classList.add("encerrado");
+  } else {
+    el.textContent = `Votação encerra em ${formatado}.`;
+    el.classList.remove("encerrado");
+  }
+}
+
+db.collection("config").doc("votacao").onSnapshot((doc) => {
+  encerramentoMs = doc.exists && doc.data().encerramento ? doc.data().encerramento.toDate().getTime() : null;
+  atualizarAvisoPrazo();
+});
+
+setInterval(atualizarAvisoPrazo, 30000);
+
 function openVoteModal(categoria, item) {
   voteContext = { categoria, participanteId: item.id, participanteNome: item.nome };
 
@@ -118,7 +149,10 @@ function openVoteModal(categoria, item) {
   document.getElementById("vote-modal-sub").textContent =
     categoria === "foto" ? "Categoria Fotos" : "Categoria Vídeos";
 
-  if (jaVotouLocal(categoria)) {
+  if (votacaoEncerrada()) {
+    document.getElementById("vote-error").textContent = "Votação encerrada. Não é mais possível votar.";
+    form.style.display = "none";
+  } else if (jaVotouLocal(categoria)) {
     document.getElementById("vote-error").textContent =
       "Este navegador já registrou um voto nesta categoria.";
   }
@@ -145,6 +179,11 @@ document.getElementById("vote-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const errorEl = document.getElementById("vote-error");
   errorEl.textContent = "";
+
+  if (votacaoEncerrada()) {
+    errorEl.textContent = "Votação encerrada. Não é mais possível votar.";
+    return;
+  }
 
   const nome = document.getElementById("vote-nome").value.trim();
   const cpf = normalizeCPF(document.getElementById("vote-cpf").value);

@@ -6,14 +6,15 @@
   padding: 28px 24px;
 }
 
-.admin-box label, #edit-form label {
+.admin-box label, #edit-form label, .admin-section label {
   display: block;
   margin-bottom: 14px;
   font-size: 13px;
   color: var(--muted);
+  max-width: 300px;
 }
 
-.admin-box input, #edit-form input[type="text"] {
+.admin-box input, #edit-form input[type="text"], .admin-section input {
   display: block;
   width: 100%;
   margin-top: 6px;

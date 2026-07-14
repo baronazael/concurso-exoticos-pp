@@ -1,13 +1,17 @@
 rules_version = '2';
 
-// Depois de criar o usuario admin no Firebase Auth (email/senha),
-// copie o UID dele (Console > Authentication > Users) e cole abaixo.
+// Depois de criar um usuario admin no Firebase Auth (email/senha),
+// copie o UID dele (Console > Authentication > Users) e adicione na lista abaixo.
 // Isso e o que da acesso de leitura de votos e escrita de participantes.
 service cloud.firestore {
   match /databases/{database}/documents {
 
     function isAdmin() {
-      return request.auth != null && request.auth.uid == "Wn5M3EGo8thlchIfqFgxwhfgvo22";
+      return request.auth != null && request.auth.uid in [
+        "Wn5M3EGo8thlchIfqFgxwhfgvo22",
+        "lvXffI2cgXSMiLapxOwbHAw4DVK2",
+        "cy29ZgCjcOTVaPETcZ47gCsbGUQ2"
+      ];
     }
 
     function isElevenDigits(id) {
@@ -20,6 +24,18 @@ service cloud.firestore {
         && request.resource.data.nome.size() > 0
         && request.resource.data.participanteId is string
         && request.resource.data.participanteId.size() > 0;
+    }
+
+    // Enquanto o admin nao definir prazo em config/votacao, a votacao fica
+    // aberta (nao trava por acidente antes do admin configurar nada).
+    function votacaoAberta() {
+      return !exists(/databases/$(database)/documents/config/votacao)
+        || request.time < get(/databases/$(database)/documents/config/votacao).data.encerramento;
+    }
+
+    match /config/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     match /participantes/{docId} {
@@ -36,13 +52,13 @@ service cloud.firestore {
     // manipulando a API diretamente poderia burlar o checksum - fechar esse
     // gap exigiria Cloud Function (plano Blaze). Ver README para detalhes.
     match /votos_fotos/{cpf} {
-      allow create: if isElevenDigits(cpf) && voteFieldsValid();
+      allow create: if isElevenDigits(cpf) && voteFieldsValid() && votacaoAberta();
       allow read: if isAdmin();
       allow update, delete: if false;
     }
 
     match /votos_videos/{cpf} {
-      allow create: if isElevenDigits(cpf) && voteFieldsValid();
+      allow create: if isElevenDigits(cpf) && voteFieldsValid() && votacaoAberta();
       allow read: if isAdmin();
       allow update, delete: if false;
     }

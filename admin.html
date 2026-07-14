@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin — Concurso Melhor Foto/Vídeo</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="admin.css">
 </head>
@@ -36,7 +37,18 @@
     <button class="tab-btn active" data-atab="participantes">Participantes</button>
     <button class="tab-btn" data-atab="votos">Contagem de votos</button>
     <button class="tab-btn" data-atab="votantes">Lista de votantes</button>
+    <button class="tab-btn" data-atab="config">Configurações</button>
   </div>
+
+  <section id="atab-config" class="tab-panel admin-section">
+    <h3>Prazo de votação</h3>
+    <p style="color:var(--muted);font-size:14px;">Depois dessa data/hora, o site para de aceitar votos automaticamente. Deixe em branco pra manter a votação aberta sem prazo.</p>
+    <label>Encerra em
+      <input type="datetime-local" id="config-encerramento">
+    </label>
+    <div class="vote-error" id="config-error"></div>
+    <button id="config-save-btn" class="vote-submit" style="max-width:260px;">Salvar prazo</button>
+  </section>
 
   <section id="atab-participantes" class="tab-panel active admin-section">
     <button id="seed-btn" class="admin-link-btn">Criar 18 fotos + 6 vídeos padrão (só na 1ª vez)</button>

@@ -54,6 +54,18 @@ header p {
 
 .tutorial-lista li { margin-bottom: 10px; }
 
+.prazo-aviso {
+  margin: 14px auto 0;
+  max-width: 420px;
+  font-size: 13px;
+  color: var(--accent);
+}
+
+.prazo-aviso.encerrado {
+  color: #ff6b6b;
+  font-weight: 700;
+}
+
 .tabs {
   display: flex;
   justify-content: center;

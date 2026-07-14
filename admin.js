@@ -1,4 +1,8 @@
-const ADMIN_UID = "Wn5M3EGo8thlchIfqFgxwhfgvo22";
+const ADMIN_UIDS = [
+  "Wn5M3EGo8thlchIfqFgxwhfgvo22",
+  "lvXffI2cgXSMiLapxOwbHAw4DVK2",
+  "cy29ZgCjcOTVaPETcZ47gCsbGUQ2",
+];
 
 const storage = firebase.storage();
 const auth = firebase.auth();
@@ -10,7 +14,7 @@ let editContext = null; // { mode: 'create'|'edit', categoria, docId }
 // --- Login ---
 
 auth.onAuthStateChanged((user) => {
-  if (user && user.uid === ADMIN_UID) {
+  if (user && ADMIN_UIDS.includes(user.uid)) {
     document.getElementById("login-box").style.display = "none";
     document.getElementById("admin-panel").style.display = "block";
     document.getElementById("admin-user").textContent = user.email;
@@ -63,6 +67,41 @@ function iniciarPainel() {
 
   document.getElementById("seed-btn").addEventListener("click", criarParticipantesPadrao);
   document.getElementById("export-csv-btn").addEventListener("click", exportarCSV);
+  carregarConfigVotacao();
+  document.getElementById("config-save-btn").addEventListener("click", salvarConfigVotacao);
+}
+
+// --- Configurações (prazo de votação) ---
+
+function carregarConfigVotacao() {
+  db.collection("config")
+    .doc("votacao")
+    .get()
+    .then((doc) => {
+      if (!doc.exists || !doc.data().encerramento) return;
+      const data = doc.data().encerramento.toDate();
+      const offset = data.getTimezoneOffset() * 60000;
+      const local = new Date(data.getTime() - offset);
+      document.getElementById("config-encerramento").value = local.toISOString().slice(0, 16);
+    });
+}
+
+async function salvarConfigVotacao() {
+  const errorEl = document.getElementById("config-error");
+  errorEl.textContent = "";
+  const valor = document.getElementById("config-encerramento").value;
+
+  if (!valor) {
+    await db.collection("config").doc("votacao").delete();
+    errorEl.textContent = "Prazo removido — votação sem data de encerramento.";
+    return;
+  }
+
+  const encerramento = new Date(valor);
+  await db.collection("config").doc("votacao").set({
+    encerramento: firebase.firestore.Timestamp.fromDate(encerramento),
+  });
+  errorEl.textContent = "Prazo salvo.";
 }
 
 // --- Participantes (lista + CRUD) ---

@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Concurso Melhor Foto/Vídeo — 3º Encontro de Super Máquinas</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,6 +13,7 @@
   <h1>Concurso de Melhor Foto/Vídeo</h1>
   <p>3º Encontro de Super Máquinas — realização Rocha Motors — veja todas as inscrições e vote na sua favorita em cada categoria</p>
   <button id="ajuda-btn" class="ajuda-btn">❔ Como funciona</button>
+  <p id="prazo-aviso" class="prazo-aviso" style="display:none;"></p>
 </header>
 
 <div class="tabs">
@@ -40,6 +42,7 @@
     <button class="lightbox-close" id="vote-modal-close">&times;</button>
     <h3 id="vote-modal-title">Confirmar voto</h3>
     <p class="vote-modal-sub" id="vote-modal-sub"></p>
+    <div class="vote-error" id="vote-error"></div>
 
     <form id="vote-form">
       <label>Nome completo
@@ -52,7 +55,6 @@
         <input type="checkbox" id="vote-consent" required>
         <span>Autorizo o uso do meu nome e CPF apenas para validar 1 voto por pessoa nesta categoria.</span>
       </label>
-      <div class="vote-error" id="vote-error"></div>
       <button type="submit" class="vote-submit">Confirmar voto</button>
     </form>
 

@@ -37,6 +37,13 @@ Tudo pelo `admin.html` (não mexe mais em código):
 - A contagem de votos **não é legível publicamente** — a regra do Firestore só libera leitura da coleção de votos pro UID do admin.
 - **Limitação conhecida**: a linguagem de regras do Firestore não roda o cálculo completo do dígito verificador do CPF (não tem loop). O checksum completo é validado no cliente; o servidor só garante formato de 11 dígitos + unicidade. Alguém manipulando a API diretamente (fora da interface) poderia burlar o checksum, mas não conseguiria votar 2x com o mesmo número nem ler a contagem. Fechar esse último gap exigiria Cloud Functions (plano pago Blaze) — avise se quiser evoluir pra isso depois.
 
+## Prazo de encerramento da votação
+
+Aba **Configurações** do `admin.html` > campo "Encerra em" (data + hora). Depois desse momento:
+- O Firestore passa a **recusar qualquer novo voto** (validado na regra, não só na interface).
+- O site público mostra aviso "Votação encerrada em ..." e desabilita o formulário de voto.
+- Deixar o campo vazio e salvar remove o prazo — volta a aceitar voto sem data de corte.
+
 ## Testes automatizados
 
 ```

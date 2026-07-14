@@ -7,10 +7,10 @@ import {
   assertFails,
 } from "@firebase/rules-unit-testing";
 
-// Mesmo valor que esta escrito em firestore.rules como placeholder do admin.
-// O teste so verifica a LOGICA da regra (uid bate/nao bate) - nao importa
-// que na producao voce troque essa string pelo UID real do admin.
-const ADMIN_UID = "COLE_O_UID_DO_ADMIN_AQUI";
+// Precisa bater com os UIDs hardcoded em firestore.rules (isAdmin()).
+// Se trocar/adicionar admin em producao, atualize os dois lugares.
+const ADMIN_UID = "Wn5M3EGo8thlchIfqFgxwhfgvo22";
+const ADMIN_UID_2 = "lvXffI2cgXSMiLapxOwbHAw4DVK2";
 const OUTRO_UID = "algum-outro-usuario";
 
 let testEnv;
@@ -40,6 +40,10 @@ function publico() {
 
 function admin() {
   return testEnv.authenticatedContext(ADMIN_UID).firestore();
+}
+
+function admin2() {
+  return testEnv.authenticatedContext(ADMIN_UID_2).firestore();
 }
 
 function usuarioComum() {
@@ -139,4 +143,41 @@ test("so o admin escreve em participantes", async () => {
 test("admin consegue remover participante", async () => {
   await seed("participantes/p1", { nome: "Participante 1", categoria: "foto", ordem: 1 });
   await assertSucceeds(admin().doc("participantes/p1").delete());
+});
+
+test("segundo admin da lista tambem tem acesso de admin", async () => {
+  await assertSucceeds(admin2().doc("participantes/novo2").set({ nome: "Y", categoria: "foto", ordem: 100 }));
+});
+
+// --- prazo de votacao (config/votacao) ---
+
+test("sem config/votacao definido, a votacao fica aberta", async () => {
+  await assertSucceeds(
+    publico().doc("votos_fotos/12345678901").set({ participanteId: "p1", nome: "Fulano", timestamp: new Date() })
+  );
+});
+
+test("bloqueia voto depois do prazo de encerramento", async () => {
+  const ontem = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  await seed("config/votacao", { encerramento: ontem });
+
+  await assertFails(
+    publico().doc("votos_fotos/12345678901").set({ participanteId: "p1", nome: "Fulano", timestamp: new Date() })
+  );
+});
+
+test("permite voto antes do prazo de encerramento", async () => {
+  const amanha = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  await seed("config/votacao", { encerramento: amanha });
+
+  await assertSucceeds(
+    publico().doc("votos_fotos/12345678901").set({ participanteId: "p1", nome: "Fulano", timestamp: new Date() })
+  );
+});
+
+test("qualquer um le o prazo, so o admin altera", async () => {
+  await seed("config/votacao", { encerramento: new Date() });
+  await assertSucceeds(publico().doc("config/votacao").get());
+  await assertFails(publico().doc("config/votacao").set({ encerramento: new Date() }));
+  await assertSucceeds(admin().doc("config/votacao").set({ encerramento: new Date() }));
 });
