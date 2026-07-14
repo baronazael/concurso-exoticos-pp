@@ -2,6 +2,10 @@ let fotos = [];
 let videos = [];
 let voteContext = null; // { categoria, participanteId, participanteNome }
 
+function nomeExibicao(item) {
+  return item.instagramUser ? `@${item.instagramUser}` : item.nome;
+}
+
 function renderGrid(gridId, countId, items, categoria) {
   const grid = document.getElementById(gridId);
   grid.innerHTML = "";
@@ -14,10 +18,10 @@ function renderGrid(gridId, countId, items, categoria) {
     const thumbHtml =
       categoria === "foto"
         ? item.arquivoUrl
-          ? `<img class="thumb" src="${item.arquivoUrl}" alt="${item.nome}">`
+          ? `<img class="thumb" src="${item.arquivoUrl}" alt="${nomeExibicao(item)}">`
           : `<div class="thumb-placeholder">Foto ainda não enviada</div>`
         : item.youtubeId
-        ? `<img class="thumb" src="https://img.youtube.com/vi/${item.youtubeId}/hqdefault.jpg" alt="${item.nome}">
+        ? `<img class="thumb" src="https://img.youtube.com/vi/${item.youtubeId}/hqdefault.jpg" alt="${nomeExibicao(item)}">
            <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`
         : item.driveFileId
         ? `<div class="thumb-placeholder">🎬 Vídeo</div>
@@ -55,9 +59,9 @@ function renderGrid(gridId, countId, items, categoria) {
 function openLightboxFoto(item) {
   const body = document.getElementById("lightbox-body");
   body.innerHTML = item.arquivoUrl
-    ? `<img src="${item.arquivoUrl}" alt="${item.nome}">`
+    ? `<img src="${item.arquivoUrl}" alt="${nomeExibicao(item)}">`
     : `<div class="thumb-placeholder" style="aspect-ratio:auto;padding:60px;">Foto ainda não enviada</div>`;
-  document.getElementById("lightbox-caption").textContent = item.nome;
+  document.getElementById("lightbox-caption").textContent = nomeExibicao(item);
   document.getElementById("lightbox").classList.add("active");
 }
 
@@ -68,7 +72,7 @@ function openLightboxVideo(item) {
     : item.driveFileId
     ? `<div class="video-frame"><iframe src="https://drive.google.com/file/d/${item.driveFileId}/preview" allow="autoplay" allowfullscreen></iframe></div>`
     : `<div class="thumb-placeholder" style="aspect-ratio:auto;padding:60px;">Vídeo ainda não disponível</div>`;
-  document.getElementById("lightbox-caption").textContent = item.nome;
+  document.getElementById("lightbox-caption").textContent = nomeExibicao(item);
   document.getElementById("lightbox").classList.add("active");
 }
 
@@ -110,7 +114,7 @@ function openVoteModal(categoria, item) {
   document.getElementById("vote-success").style.display = "none";
   form.style.display = "block";
 
-  document.getElementById("vote-modal-title").textContent = `Votar em: ${item.nome}`;
+  document.getElementById("vote-modal-title").textContent = `Votar em: ${nomeExibicao(item)}`;
   document.getElementById("vote-modal-sub").textContent =
     categoria === "foto" ? "Categoria Fotos" : "Categoria Vídeos";
 
@@ -181,6 +185,28 @@ document.getElementById("vote-form").addEventListener("submit", async (e) => {
     submitBtn.textContent = "Confirmar voto";
   }
 });
+
+// --- Tutorial ---
+
+function abrirTutorial() {
+  document.getElementById("tutorial-modal").classList.add("active");
+}
+
+function fecharTutorial() {
+  document.getElementById("tutorial-modal").classList.remove("active");
+  localStorage.setItem("tutorial_visto", "1");
+}
+
+document.getElementById("ajuda-btn").addEventListener("click", abrirTutorial);
+document.getElementById("tutorial-close-btn").addEventListener("click", fecharTutorial);
+document.getElementById("tutorial-close-x").addEventListener("click", fecharTutorial);
+document.getElementById("tutorial-modal").addEventListener("click", (e) => {
+  if (e.target.id === "tutorial-modal") fecharTutorial();
+});
+
+if (localStorage.getItem("tutorial_visto") !== "1") {
+  abrirTutorial();
+}
 
 // --- Firestore live data ---
 

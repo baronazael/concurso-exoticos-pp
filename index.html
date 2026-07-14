@@ -11,6 +11,7 @@
 <header>
   <h1>Concurso de Melhor Foto/Vídeo</h1>
   <p>3º Encontro de Super Máquinas — realização Rocha Motors — veja todas as inscrições e vote na sua favorita em cada categoria</p>
+  <button id="ajuda-btn" class="ajuda-btn">❔ Como funciona</button>
 </header>
 
 <div class="tabs">
@@ -58,6 +59,21 @@
     <div class="vote-success" id="vote-success" style="display:none;">
       Voto registrado! Obrigado por participar. 🎉
     </div>
+  </div>
+</div>
+
+<div class="vote-modal" id="tutorial-modal">
+  <div class="vote-modal-box">
+    <button class="lightbox-close" id="tutorial-close-x">&times;</button>
+    <h3>Como funciona a votação</h3>
+    <ol class="tutorial-lista">
+      <li>Use as abas <strong>📸 Fotos</strong> e <strong>🎥 Vídeos</strong> pra trocar de categoria.</li>
+      <li>Toque numa foto ou vídeo pra ver em tamanho grande.</li>
+      <li>Toque em <strong>Votar</strong> no card do seu favorito.</li>
+      <li>Informe seu nome e CPF só pra validar 1 voto por pessoa — ninguém vê quantos votos cada um recebeu, nem você pode votar 2x.</li>
+      <li>Vale <strong>1 voto em Fotos + 1 voto em Vídeos</strong>, são categorias independentes.</li>
+    </ol>
+    <button type="button" class="vote-submit" id="tutorial-close-btn">Entendi, vamos votar!</button>
   </div>
 </div>
 

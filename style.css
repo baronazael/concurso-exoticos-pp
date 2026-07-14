@@ -33,6 +33,27 @@ header p {
   font-size: 15px;
 }
 
+.ajuda-btn {
+  margin-top: 14px;
+  background: var(--card);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.tutorial-lista {
+  margin: 0 0 20px;
+  padding-left: 20px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.tutorial-lista li { margin-bottom: 10px; }
+
 .tabs {
   display: flex;
   justify-content: center;
