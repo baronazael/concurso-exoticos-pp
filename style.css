@@ -145,6 +145,15 @@ header p {
   pointer-events: none;
 }
 
+.name-overlay.ig-link {
+  pointer-events: auto;
+  color: var(--accent);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.name-overlay.ig-link:hover { text-decoration: underline; }
+
 /* Lightbox */
 .lightbox {
   display: none;

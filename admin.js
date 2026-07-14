@@ -95,7 +95,7 @@ function renderAdminList(containerId, items, categoria) {
     row.innerHTML = `
       <span class="row-order">#${item.ordem ?? "-"}</span>
       ${thumb}
-      <span class="row-name">${item.nome}</span>
+      <span class="row-name">${item.nome}${item.instagramUser ? ` (@${item.instagramUser})` : ""}</span>
       <button data-edit="${item.id}">Editar</button>
     `;
     row.querySelector("[data-edit]").addEventListener("click", () => abrirModalEdicao(categoria, item));
@@ -109,11 +109,20 @@ function extrairYoutubeId(valor) {
   return match ? match[1] : v;
 }
 
+function extrairInstagramUser(valor) {
+  return valor
+    .trim()
+    .replace(/^https?:\/\/(www\.)?instagram\.com\//i, "")
+    .replace(/^@/, "")
+    .replace(/\/.*$/, "");
+}
+
 function abrirModalEdicao(categoria, item) {
   editContext = { mode: item ? "edit" : "create", categoria, docId: item ? item.id : null, ordemAtual: item ? item.ordem : null };
 
   document.getElementById("edit-modal-title").textContent = item ? `Editar ${item.nome}` : "Novo participante";
   document.getElementById("edit-nome").value = item ? item.nome : "";
+  document.getElementById("edit-instagram").value = item ? item.instagramUser || "" : "";
   document.getElementById("edit-arquivo").value = "";
   document.getElementById("edit-youtube-id").value = item ? item.youtubeId || "" : "";
   document.getElementById("edit-error").textContent = "";
@@ -145,7 +154,12 @@ document.getElementById("edit-form").addEventListener("submit", async (e) => {
   saveBtn.textContent = "Salvando...";
 
   try {
-    const dados = { nome, categoria: editContext.categoria };
+    const instagramRaw = document.getElementById("edit-instagram").value.trim();
+    const dados = {
+      nome,
+      categoria: editContext.categoria,
+      instagramUser: instagramRaw ? extrairInstagramUser(instagramRaw) : null,
+    };
 
     if (editContext.categoria === "foto") {
       const file = document.getElementById("edit-arquivo").files[0];

@@ -1,6 +1,6 @@
-# Concurso @exoticos_pp
+# Concurso Melhor Foto/Vídeo — 3º Encontro de Super Máquinas (Rocha Motors)
 
-Galeria pública (Fotos + Vídeos) com votação embutida (1 voto por CPF por categoria) e painel admin. Front-end estático no GitHub Pages; dados/votos/auth no Firebase (plano gratuito Spark cobre o volume esperado de 10-20mil votos).
+Galeria pública (Fotos + Vídeos) com votação embutida (1 voto por CPF por categoria) e painel admin. Front-end estático no GitHub Pages; dados/votos/auth no Firebase.
 
 ## Setup inicial (uma vez só)
 

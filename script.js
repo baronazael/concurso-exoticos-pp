@@ -21,13 +21,20 @@ function renderGrid(gridId, countId, items, categoria) {
            <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`
         : `<div class="thumb-placeholder">Vídeo em breve</div>`;
 
+    const nomeHtml = item.instagramUser
+      ? `<a class="name-overlay ig-link" href="https://instagram.com/${item.instagramUser}" target="_blank" rel="noopener">@${item.instagramUser}</a>`
+      : `<div class="name-overlay">${item.nome}</div>`;
+
     card.innerHTML = `
       <div class="thumb-wrap">
         ${thumbHtml}
-        <div class="name-overlay">${item.nome}</div>
+        ${nomeHtml}
       </div>
       <button class="vote-btn" type="button">Votar</button>
     `;
+
+    const igLink = card.querySelector(".ig-link");
+    if (igLink) igLink.addEventListener("click", (e) => e.stopPropagation());
 
     card.querySelector(".thumb-wrap").addEventListener("click", () => {
       categoria === "foto" ? openLightboxFoto(item) : openLightboxVideo(item);
