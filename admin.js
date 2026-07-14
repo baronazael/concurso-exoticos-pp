@@ -1,4 +1,4 @@
-const ADMIN_UID = "COLE_O_UID_DO_ADMIN_AQUI";
+const ADMIN_UID = "Wn5M3EGo8thlchIfqFgxwhfgvo22";
 
 const storage = firebase.storage();
 const auth = firebase.auth();
