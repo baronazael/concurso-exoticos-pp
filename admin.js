@@ -109,6 +109,13 @@ function extrairYoutubeId(valor) {
   return match ? match[1] : v;
 }
 
+function extrairVideoLink(valor) {
+  const v = valor.trim();
+  const drive = v.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (drive) return { driveFileId: drive[1], youtubeId: null };
+  return { youtubeId: extrairYoutubeId(v), driveFileId: null };
+}
+
 function extrairInstagramUser(valor) {
   return valor
     .trim()
@@ -124,7 +131,7 @@ function abrirModalEdicao(categoria, item) {
   document.getElementById("edit-nome").value = item ? item.nome : "";
   document.getElementById("edit-instagram").value = item ? item.instagramUser || "" : "";
   document.getElementById("edit-arquivo").value = "";
-  document.getElementById("edit-youtube-id").value = item ? item.youtubeId || "" : "";
+  document.getElementById("edit-youtube-id").value = item ? item.youtubeId || item.driveFileId || "" : "";
   document.getElementById("edit-error").textContent = "";
 
   document.getElementById("edit-foto-label").style.display = categoria === "foto" ? "block" : "none";
@@ -171,7 +178,7 @@ document.getElementById("edit-form").addEventListener("submit", async (e) => {
       }
     } else {
       const raw = document.getElementById("edit-youtube-id").value.trim();
-      if (raw) dados.youtubeId = extrairYoutubeId(raw);
+      if (raw) Object.assign(dados, extrairVideoLink(raw));
     }
 
     if (editContext.mode === "create") {

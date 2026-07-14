@@ -19,6 +19,9 @@ function renderGrid(gridId, countId, items, categoria) {
         : item.youtubeId
         ? `<img class="thumb" src="https://img.youtube.com/vi/${item.youtubeId}/hqdefault.jpg" alt="${item.nome}">
            <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`
+        : item.driveFileId
+        ? `<div class="thumb-placeholder">🎬 Vídeo</div>
+           <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`
         : `<div class="thumb-placeholder">Vídeo em breve</div>`;
 
     const nomeHtml = item.instagramUser
@@ -62,6 +65,8 @@ function openLightboxVideo(item) {
   const body = document.getElementById("lightbox-body");
   body.innerHTML = item.youtubeId
     ? `<div class="video-frame"><iframe src="https://www.youtube.com/embed/${item.youtubeId}" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>`
+    : item.driveFileId
+    ? `<div class="video-frame"><iframe src="https://drive.google.com/file/d/${item.driveFileId}/preview" allow="autoplay" allowfullscreen></iframe></div>`
     : `<div class="thumb-placeholder" style="aspect-ratio:auto;padding:60px;">Vídeo ainda não disponível</div>`;
   document.getElementById("lightbox-caption").textContent = item.nome;
   document.getElementById("lightbox").classList.add("active");
